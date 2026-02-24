@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auction App</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #111;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .section {
+      margin-bottom: 3rem;
+    }
+    h2 {
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.5rem;
+    }
+    .item {
+      background-color: #111;
+      border: 1px solid #444;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+    .item img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .button {
+      background-color: #fff;
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #ddd;
+    }
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .dashboard .card {
+      flex: 1 1 calc(33% - 1rem);
+      background-color: #111;
+      border: 1px solid #444;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: #fff;
+    }
+    input::placeholder {
+      color: #aaa;
+    }
+    .timer {
+      font-weight: bold;
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+
+<header>Auction App</header>
+
+<div class="container">
+
+  <!-- User Registration Mockup -->
+  <div class="section">
+    <h2>Create Account</h2>
+    <div class="form-group">
+      <input type="text" placeholder="Name">
+    </div>
+    <div class="form-group">
+      <input type="email" placeholder="Email">
+    </div>
+    <div class="form-group">
+      <input type="password" placeholder="Password">
+    </div>
+    <div class="form-group">
+      <input type="text" placeholder="Card Number">
+    </div>
+    <button class="button" onclick="alert('Account Created!')">Sign Up</button>
+  </div>
+
+  <!-- Auction Items Mockup -->
+  <div class="section">
+    <h2>Live Auctions</h2>
+    <div class="dashboard" id="auctionItems">
+      <!-- Auction items inserted by JS -->
+    </div>
+  </div>
+
+  <!-- Straight Sale Items Mockup -->
+  <div class="section">
+    <h2>Straight Sale Items</h2>
+    <div class="dashboard" id="saleItems">
+      <!-- Sale items inserted by JS -->
+    </div>
+  </div>
+
+  <!-- Dashboard Mockup -->
+  <div class="section">
+    <h2>User Dashboard</h2>
+    <div class="dashboard">
+      <div class="card">
+        <h3>My Bids</h3>
+        <ul id="myBids">
+          <!-- Bids will appear here -->
+        </ul>
+      </div>
+      <div class="card">
+        <h3>My Wins</h3>
+        <ul id="myWins">
+          <!-- Wins appear here -->
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Previous Auctions</h3>
+        <ul>
+          <li>Antique Vase</li>
+          <li>Sports Car Model</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Data
+  const auctionItemsData = [
+    {id:1, name:'Luxury Watch', reserve:5000, currentBid:5500, image:'https://via.placeholder.com/300x200', endTime: new Date(Date.now() + 60000)},
+    {id:2, name:'Vintage Guitar', reserve:10000, currentBid:12000, image:'https://via.placeholder.com/300x200', endTime: new Date(Date.now() + 120000)}
+  ];
+
+  const saleItemsData = [
+    {id:3, name:'Designer Bag', price:8000, image:'https://via.placeholder.com/300x200', stock:5},
+    {id:4, name:'Gaming Laptop', price:15000, image:'https://via.placeholder.com/300x200', stock:5}
+  ];
+
+  let myBids = [];
+  let myWins = [];
+
+  // Functions
+  function renderAuctionItems() {
+    const container = document.getElementById('auctionItems');
+    container.innerHTML = '';
+    auctionItemsData.forEach(item => {
+      const card = document.createElement('div');
+      card.classList.add('card','item');
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <h3>${item.name}</h3>
+        <p>Reserve Price: ZAR ${item.reserve.toLocaleString()}</p>
+        <p>Current Bid: ZAR <span id="bid-${item.id}">${item.currentBid.toLocaleString()}</span></p>
+        <p>Time Left: <span class="timer" id="timer-${item.id}"></span></p>
+        <button class="button" onclick="placeBid(${item.id})">Place Bid</button>
+      `;
+      container.appendChild(card);
+      updateTimer(item.id);
+    });
+  }
+
+  function updateTimer(id) {
+    const timerEl = document.getElementById(`timer-${id}`);
+    const interval = setInterval(() => {
+      const item = auctionItemsData.find(i => i.id===id);
+      const now = new Date();
+      const diff = item.endTime - now;
+      if(diff <= 0) {
+        timerEl.textContent = "Auction Ended";
+        clearInterval(interval);
+        if(item.currentBid >= item.reserve) {
+          alert(`Auction Ended: ${item.name} won with ZAR ${item.currentBid.toLocaleString()}`);
+          myWins.push(item.name);
+          renderDashboard();
+        }
+        return;
+      }
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000)/1000);
+      timerEl.textContent = `${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+    }, 1000);
+  }
+
+  function placeBid(id) {
+    const item = auctionItemsData.find(i => i.id===id);
+    item.currentBid += 500; // mock bid increment
+    document.getElementById(`bid-${id}`).textContent = item.currentBid.toLocaleString();
+    myBids.push(`${item.name} - ZAR ${item.currentBid.toLocaleString()}`);
+    renderDashboard();
+  }
+
+  function renderSaleItems() {
+    const container = document.getElementById('saleItems');
+    container.innerHTML = '';
+    saleItemsData.forEach(item => {
+      const card = document.createElement('div');
+      card.classList.add('card','item');
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <h3>${item.name}</h3>
+        <p>Price: ZAR ${item.price.toLocaleString()}</p>
+        <p>Stock: ${item.stock}</p>
+        <button class="button" onclick="addToCart(${item.id})">Add to Cart</button>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function addToCart(id) {
+    const item = saleItemsData.find(i => i.id===id);
+    if(item.stock > 0) {
+      item.stock--;
+      alert(`Added ${item.name} to cart. You will be charged automatically if stock runs out!`);
+      renderSaleItems();
+      if(item.stock===0) {
+        alert(`${item.name} sold out! Charged successfully.`);
+        myWins.push(item.name);
+        renderDashboard();
+      }
+    } else {
+      alert('Sold out!');
+    }
+  }
+
+  function renderDashboard() {
+    const bidsEl = document.getElementById('myBids');
+    const winsEl = document.getElementById('myWins');
+    bidsEl.innerHTML = '';
+    winsEl.innerHTML = '';
+    myBids.forEach(bid => {
+      const li = document.createElement('li');
+      li.textContent = bid;
+      bidsEl.appendChild(li);
+    });
+    myWins.forEach(win => {
+      const li = document.createElement('li');
+      li.textContent = win;
+      winsEl.appendChild(li);
+    });
+  }
+
+  renderAuctionItems();
+  renderSaleItems();
+  renderDashboard();
+</script>
+
+</body>
+</html>
