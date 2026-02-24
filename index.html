@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auction App</title>
-  <style>
-    body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin:0; padding:0;}
-    header { background-color:#111; padding:1rem; text-align:center; font-size:2rem; font-weight:bold;}
-    .container { max-width:1200px; margin:auto; padding:2rem;}
-    .hidden { display:none; }
-    .section { margin-bottom:3rem; }
-    h2 { border-bottom:1px solid #444; padding-bottom:0.5rem; }
-    .button { background-color:#fff; color:#000; border:none; padding:0.5rem 1rem; margin-top:0.5rem; cursor:pointer; border-radius:5px;}
-    .button:hover { background-color:#ddd; }
-    .item { background-color:#111; border:1px solid #444; padding:1rem; margin-bottom:1rem; border-radius:8px; }
-    .item img { max-width:100%; border-radius:8px; }
-    .dashboard { display:flex; flex-wrap:wrap; gap:1rem; }
-    .dashboard .card { flex:1 1 calc(33% - 1rem); background-color:#111; border:1px solid #444; padding:1rem; border-radius:8px; }
-    .form-group { margin-bottom:1rem; }
-    input, select { width:100%; padding:0.5rem; border-radius:5px; border:1px solid #444; background-color:#222; color:#fff; }
-    input::placeholder { color:#aaa; }
-    .timer { font-weight:bold; color:#0f0; }
-    .logout { position:fixed; top:1rem; right:1rem; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auction App</title>
+<style>
+body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin:0; padding:0;}
+header { background-color:#111; padding:1rem; text-align:center; font-size:2rem; font-weight:bold;}
+.container { max-width:1200px; margin:auto; padding:2rem;}
+.hidden { display:none; }
+.section { margin-bottom:3rem; }
+h2 { border-bottom:1px solid #444; padding-bottom:0.5rem; }
+.button { background-color:#fff; color:#000; border:none; padding:0.5rem 1rem; margin-top:0.5rem; cursor:pointer; border-radius:5px;}
+.button:hover { background-color:#ddd; }
+.item { background-color:#111; border:1px solid #444; padding:1rem; margin-bottom:1rem; border-radius:8px; }
+.item img { max-width:100%; border-radius:8px; }
+.dashboard { display:flex; flex-wrap:wrap; gap:1rem; }
+.dashboard .card { flex:1 1 calc(33% - 1rem); background-color:#111; border:1px solid #444; padding:1rem; border-radius:8px; }
+.form-group { margin-bottom:1rem; }
+input, select { width:100%; padding:0.5rem; border-radius:5px; border:1px solid #444; background-color:#222; color:#fff; }
+input::placeholder { color:#aaa; }
+.timer { font-weight:bold; color:#0f0; }
+.logout { position:fixed; top:1rem; right:1rem; }
+ul { padding-left:1rem; max-height:150px; overflow-y:auto; border:1px solid #444; border-radius:5px; margin-top:0.5rem; padding:0.5rem;}
+ul li { padding:0.2rem 0; border-bottom:1px solid #333;}
+ul li:last-child { border-bottom:none;}
+</style>
 </head>
 <body>
 
@@ -99,145 +102,151 @@
 </div>
 
 <script>
-  let role = null;
-  let username = '';
-  let auctionCounter = 11;
-  let saleCounter = 6;
-  let myBids = [];
-  let myWins = [];
+let role = null;
+let username = '';
+let auctionCounter = 11;
+let saleCounter = 6;
+let myBids = [];
+let myWins = [];
 
-  const auctionItemsData = [
-    {id:1, name:'Luxury Watch', reserve:5000, currentBid:5500, currentUser:null, image:'https://images.unsplash.com/photo-1620625515032-6ed0c1790c75?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cm9sZXh8ZW58MHx8MHx8fDA%3D', endTime: new Date(Date.now() + 60000)},
-    {id:2, name:'Vintage Guitar', reserve:10000, currentBid:12000, currentUser:null, image:'https://images.unsplash.com/photo-1565129053719-e2869533997f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dmludGFnZSUyMGd1aXRhcnxlbnwwfHwwfHx8MA%3D%3D', endTime: new Date(Date.now() + 120000)},
-    {id:3, name:'Antique Vase', reserve:2500, currentBid:3000, currentUser:null, image:'https://plus.unsplash.com/premium_photo-1679811667938-653de2474ca1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YW50aXF1ZSUyMHZhc2V8ZW58MHx8MHx8fDA%3D', endTime: new Date(Date.now() + 180000)},
+const auctionItemsData = [
+  {id:1, name:'Luxury Watch', reserve:5000, currentBid:5500, currentUser:null, bids:[], image:'https://images.unsplash.com/photo-1620625515032-6ed0c1790c75?w=600&auto=format&fit=crop&q=60', endTime: new Date(Date.now() + 60000)},
+  {id:2, name:'Vintage Guitar', reserve:10000, currentBid:12000, currentUser:null, bids:[], image:'https://images.unsplash.com/photo-1565129053719-e2869533997f?w=600&auto=format&fit=crop&q=60', endTime: new Date(Date.now() + 120000)},
+  {id:3, name:'Antique Vase', reserve:2500, currentBid:3000, currentUser:null, bids:[], image:'https://plus.unsplash.com/premium_photo-1679811667938-653de2474ca1?w=600&auto=format&fit=crop&q=60', endTime: new Date(Date.now() + 180000)},
+];
 
-  ];
+const saleItemsData = [
+  {id:2, name:'Gaming Laptop', price:15000, image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80', stock:5},
+  {id:3, name:'Smartphone', price:10000, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80', stock:5},
+];
 
-  const saleItemsData = [
-    {id:2, name:'Gaming Laptop', price:15000, image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80', stock:5},
-    {id:3, name:'Smartphone', price:10000, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80', stock:5},
-  ];
+function login() {
+  username = document.getElementById('username').value || 'Anonymous';
+  role = document.getElementById('roleSelect').value;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.querySelector('.logout').classList.remove('hidden');
+  if(role==='admin') document.getElementById('adminDashboard').classList.remove('hidden');
+  else document.getElementById('userDashboard').classList.remove('hidden');
+  if(role==='user') { renderAuctionItems(); renderSaleItems(); renderDashboard(); }
+}
 
-  function login() {
-    username = document.getElementById('username').value || 'Anonymous';
-    role = document.getElementById('roleSelect').value;
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.querySelector('.logout').classList.remove('hidden');
-    if(role==='admin') document.getElementById('adminDashboard').classList.remove('hidden');
-    else document.getElementById('userDashboard').classList.remove('hidden');
-    if(role==='user') { renderAuctionItems(); renderSaleItems(); renderDashboard(); }
-  }
+function logout() { location.reload(); }
 
-  function logout() { location.reload(); }
+function createAuction() {
+  const name = document.getElementById('auctionName').value;
+  const reserve = Number(document.getElementById('auctionReserve').value);
+  const image = document.getElementById('auctionImage').value;
+  const duration = Number(document.getElementById('auctionDuration').value) * 1000;
+  const endTime = new Date(Date.now() + duration);
+  auctionItemsData.push({id:auctionCounter++, name, reserve, currentBid:reserve, currentUser:null, bids:[], image, endTime});
+  alert('Auction created!');
+}
 
-  function createAuction() {
-    const name = document.getElementById('auctionName').value;
-    const reserve = Number(document.getElementById('auctionReserve').value);
-    const image = document.getElementById('auctionImage').value;
-    const duration = Number(document.getElementById('auctionDuration').value) * 1000;
-    const endTime = new Date(Date.now() + duration);
-    auctionItemsData.push({id:auctionCounter++, name, reserve, currentBid:reserve, currentUser:null, image, endTime});
-    alert('Auction created!');
-  }
+function createSale() {
+  const name = document.getElementById('saleName').value;
+  const price = Number(document.getElementById('salePrice').value);
+  const image = document.getElementById('saleImage').value;
+  const stock = Number(document.getElementById('saleStock').value);
+  saleItemsData.push({id:saleCounter++, name, price, image, stock});
+  alert('Straight sale item created!');
+}
 
-  function createSale() {
-    const name = document.getElementById('saleName').value;
-    const price = Number(document.getElementById('salePrice').value);
-    const image = document.getElementById('saleImage').value;
-    const stock = Number(document.getElementById('saleStock').value);
-    saleItemsData.push({id:saleCounter++, name, price, image, stock});
-    alert('Straight sale item created!');
-  }
+function renderAuctionItems() {
+  const container = document.getElementById('auctionItems');
+  container.innerHTML='';
+  auctionItemsData.forEach(item=>{
+    const card = document.createElement('div');
+    card.classList.add('card','item');
+    const bidsHTML = item.bids.map(b=>`<li>${b.username} bid ZAR ${b.amount.toLocaleString()} (${b.time})</li>`).join('');
+    card.innerHTML = `
+      <img src="${item.image}" alt="${item.name}">
+      <h3>${item.name}</h3>
+      <p>Reserve Price: ZAR ${item.reserve.toLocaleString()}</p>
+      <p>Current Bid: ZAR <span id="bid-${item.id}">${item.currentBid.toLocaleString()}</span></p>
+      <p>Highest Bidder: <span id="bidder-${item.id}">${item.currentUser || '-'}</span></p>
+      <p>Time Left: <span class="timer" id="timer-${item.id}"></span></p>
+      <button class="button" onclick="placeBid(${item.id})">Place Bid</button>
+      <ul id="bids-list-${item.id}">${bidsHTML}</ul>
+    `;
+    container.appendChild(card);
+    updateTimer(item.id);
+  });
+}
 
-  function renderAuctionItems() {
-    const container = document.getElementById('auctionItems');
-    container.innerHTML='';
-    auctionItemsData.forEach(item=>{
-      const card = document.createElement('div');
-      card.classList.add('card','item');
-      card.innerHTML = `
-        <img src="${item.image}" alt="${item.name}">
-        <h3>${item.name}</h3>
-        <p>Reserve Price: ZAR ${item.reserve.toLocaleString()}</p>
-        <p>Current Bid: ZAR <span id="bid-${item.id}">${item.currentBid.toLocaleString()}</span></p>
-        <p>Highest Bidder: <span id="bidder-${item.id}">${item.currentUser || '-'}</span></p>
-        <p>Time Left: <span class="timer" id="timer-${item.id}"></span></p>
-        <button class="button" onclick="placeBid(${item.id})">Place Bid</button>
-      `;
-      container.appendChild(card);
-      updateTimer(item.id);
-    });
-  }
-
-  function updateTimer(id) {
-    const timerEl = document.getElementById(`timer-${id}`);
-    const interval = setInterval(()=>{
-      const item = auctionItemsData.find(i=>i.id===id);
-      const diff = item.endTime - new Date();
-      if(diff<=0){
-        timerEl.textContent="Auction Ended";
-        clearInterval(interval);
-        if(item.currentBid>=item.reserve){
-          alert(`Auction Ended: ${item.name} won by ${item.currentUser} with ZAR ${item.currentBid.toLocaleString()}`);
-          myWins.push(`${item.name} (Winner: ${item.currentUser})`);
-          renderDashboard();
-        }
-        return;
-      }
-      const minutes = Math.floor(diff/60000);
-      const seconds = Math.floor((diff%60000)/1000);
-      timerEl.textContent = `${minutes}:${seconds<10?'0'+seconds:seconds}`;
-    },1000);
-  }
-
-  function placeBid(id){
+function updateTimer(id) {
+  const timerEl = document.getElementById(`timer-${id}`);
+  const interval = setInterval(()=>{
     const item = auctionItemsData.find(i=>i.id===id);
-    item.currentBid += 500;
-    item.currentUser = username;
-    document.getElementById(`bid-${id}`).textContent=item.currentBid.toLocaleString();
-    document.getElementById(`bidder-${id}`).textContent=username;
-    myBids.push(`${item.name} - ZAR ${item.currentBid.toLocaleString()}`);
-    renderDashboard();
-  }
-
-  function renderSaleItems(){
-    const container = document.getElementById('saleItems');
-    container.innerHTML='';
-    saleItemsData.forEach(item=>{
-      const card = document.createElement('div');
-      card.classList.add('card','item');
-      card.innerHTML=`
-        <img src="${item.image}" alt="${item.name}">
-        <h3>${item.name}</h3>
-        <p>Price: ZAR ${item.price.toLocaleString()}</p>
-        <p>Stock: ${item.stock}</p>
-        <button class="button" onclick="addToCart(${item.id})">Add to Cart</button>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function addToCart(id){
-    const item = saleItemsData.find(i=>i.id===id);
-    if(item.stock>0){
-      item.stock--;
-      alert(`Added ${item.name} to cart. You will be charged automatically if stock runs out!`);
-      renderSaleItems();
-      if(item.stock===0){
-        alert(`${item.name} sold out! Charged successfully.`);
-        myWins.push(`${item.name} (Winner: ${username})`);
+    const diff = item.endTime - new Date();
+    if(diff<=0){
+      timerEl.textContent="Auction Ended";
+      clearInterval(interval);
+      if(item.currentBid>=item.reserve){
+        const winnerName = "Tim"; 
+        alert(`Auction Ended: ${item.name} won by ${winnerName} with ZAR ${item.currentBid.toLocaleString()}`);
+        myWins.push(`${item.name} - ZAR ${item.currentBid.toLocaleString()} (Winner: ${winnerName})`);
         renderDashboard();
       }
-    } else alert('Sold out!');
-  }
+      return;
+    }
+    const minutes = Math.floor(diff/60000);
+    const seconds = Math.floor((diff%60000)/1000);
+    timerEl.textContent = `${minutes}:${seconds<10?'0'+seconds:seconds}`;
+  },1000);
+}
 
-  function renderDashboard(){
-    const bidsEl = document.getElementById('myBids');
-    const winsEl = document.getElementById('myWins');
-    bidsEl.innerHTML=''; winsEl.innerHTML='';
-    myBids.forEach(bid=>{ const li=document.createElement('li'); li.textContent=bid; bidsEl.appendChild(li);});
-    myWins.forEach(win=>{ const li=document.createElement('li'); li.textContent=win; winsEl.appendChild(li);});
-  }
+function placeBid(id){
+  const item = auctionItemsData.find(i=>i.id===id);
+  item.currentBid += 500;
+  item.currentUser = username;
+  const time = new Date().toLocaleTimeString();
+  item.bids.push({username, amount: item.currentBid, time});
+  document.getElementById(`bid-${id}`).textContent=item.currentBid.toLocaleString();
+  document.getElementById(`bidder-${id}`).textContent=username;
+  const bidsList = document.getElementById(`bids-list-${id}`);
+  bidsList.innerHTML = item.bids.map(b=>`<li>${b.username} bid ZAR ${b.amount.toLocaleString()} (${b.time})</li>`).join('');
+  myBids.push(`${item.name} - ZAR ${item.currentBid.toLocaleString()} (Time: ${time})`);
+  renderDashboard();
+}
+
+function renderSaleItems(){
+  const container = document.getElementById('saleItems');
+  container.innerHTML='';
+  saleItemsData.forEach(item=>{
+    const card = document.createElement('div');
+    card.classList.add('card','item');
+    card.innerHTML=`
+      <img src="${item.image}" alt="${item.name}">
+      <h3>${item.name}</h3>
+      <p>Price: ZAR ${item.price.toLocaleString()}</p>
+      <p>Stock: ${item.stock}</p>
+      <button class="button" onclick="addToCart(${item.id})">Add to Cart</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function addToCart(id){
+  const item = saleItemsData.find(i=>i.id===id);
+  if(item.stock>0){
+    item.stock--;
+    alert(`Added ${item.name} to cart. You will be charged automatically if stock runs out!`);
+    renderSaleItems();
+    if(item.stock===0){
+      alert(`${item.name} sold out! Charged successfully.`);
+      myWins.push(`${item.name} - ZAR ${item.price.toLocaleString()} (Winner: ${username})`);
+      renderDashboard();
+    }
+  } else alert('Sold out!');
+}
+
+function renderDashboard(){
+  const bidsEl = document.getElementById('myBids');
+  const winsEl = document.getElementById('myWins');
+  bidsEl.innerHTML=''; winsEl.innerHTML='';
+  myBids.forEach(bid=>{ const li=document.createElement('li'); li.textContent=bid; bidsEl.appendChild(li);});
+  myWins.forEach(win=>{ const li=document.createElement('li'); li.textContent=win; winsEl.appendChild(li);});
+}
 </script>
 
 </body>
